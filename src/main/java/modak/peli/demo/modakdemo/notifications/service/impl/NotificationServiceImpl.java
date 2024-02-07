@@ -19,8 +19,6 @@ public class NotificationServiceImpl implements NotificationService {
 
     private final NotificationRepository notificationRepository;
 
-    Integer MAX_RATE_LIMIT_COUNT = 1;
-
     @Override
     public void send(String userId, NotificationType type, String payload) {
 
@@ -28,9 +26,6 @@ public class NotificationServiceImpl implements NotificationService {
             log.info("Rate limit exceeded for user: " + userId + " and type: " + type);
             throw new TooSoonException();
         }
-
-        notificationRepository.count();
-        log.info("Notification count: " + notificationRepository.count());
 
         Notification notification = Notification.of(
                 UUID.randomUUID(),
@@ -51,19 +46,16 @@ public class NotificationServiceImpl implements NotificationService {
         }
     }
 
-    private Long countByUserIdAndType(String userId, NotificationType type, LocalDateTime timestamp) {
-        return notificationRepository.findByUserIdAndType(userId, type).stream()
-                .filter(n -> n.getUserId().equals(userId))
-                .filter(n -> n.getType().equals(type))
-                .filter(n -> n.getSendAt().isAfter(timestamp))
-                .count();
-    }
-
     private boolean isRateLimitExceeded(String userId, NotificationType type) {
         LocalDateTime timestamp = LocalDateTime.now().minusSeconds(type.getRateLimitInSeconds());
         Long count = countByUserIdAndType(userId, type, timestamp);
-        log.info("Rate limit check for user: %s and type: %sLimit: %d Count: %d".formatted(userId, type, type.getRateLimitCount(), count));
         return count >= type.getRateLimitCount();
+    }
+
+    private Long countByUserIdAndType(String userId, NotificationType type, LocalDateTime timestamp) {
+        return notificationRepository.findByUserIdAndType(userId, type).stream()
+              .filter(n -> n.getSendAt().isAfter(timestamp))
+              .count();
     }
 
     private void deleteOldNotifications(NotificationType type) {

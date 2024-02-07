@@ -4,7 +4,7 @@ public enum NotificationType {
 
     STATUS_UPDATE(2, 60),
     DAILY_NEWS(1, 86400),
-    PROJECT_INVITATION(3, 10800);
+    MARKETING(3, 10800);
 
     private final Integer rateLimitCount;
     private final Integer rateLimitInSeconds;
