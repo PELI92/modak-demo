@@ -1,0 +1,20 @@
+server:
+  port: 8080
+  error:
+    include-message: always
+    include-binding-errors: always
+    include-exception: false
+    include-stacktrace: never
+
+spring:
+  main.banner-mode: "off"
+  application:
+    name: modak-demo
+  data:
+    mongodb:
+      host: mongo-db
+      port: 27017
+      database: modak
+      username: user
+      password: pass
+      authentication-database: admin

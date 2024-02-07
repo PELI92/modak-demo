@@ -1,0 +1,42 @@
+server:
+  port: 8080
+  error:
+    include-message: always
+    include-binding-errors: always
+    include-exception: false
+    include-stacktrace: never
+
+spring:
+  main.banner-mode: "off"
+  application:
+    name: modak-demo
+  data:
+    mongodb:
+      host: localhost
+      port: 27017
+      database: modak
+      username: user
+      password: pass
+      authentication-database: admin
+
+lombok.log:
+  fieldName: log
+  fieldIsStatic: true
+  declaration: java.util.logging.Logger java.util.logging.Logger.getLogger(NAME)(TOPIC)
+
+logbook:
+  include:
+    - /api/**
+  exclude:
+    - /actuator/**
+    - /
+  format.style: json
+  filter:
+    enabled: true
+
+springdoc:
+  api-docs:
+    enabled: true
+    path: /open-api
+  swagger-ui:
+    path: /swagger-ui

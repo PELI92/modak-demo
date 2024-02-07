@@ -1,0 +1,40 @@
+version: "3.8"
+
+networks:
+  db-network:
+    driver: bridge
+
+services:
+
+  mongo-db:
+    container_name: mongo-db
+    image: mongodb/mongodb-community-server
+    environment:
+      - MONGO_INITDB_DATABASE=modak
+      - MONGO_INITDB_ROOT_USERNAME=user
+      - MONGO_INITDB_ROOT_PASSWORD=pass
+    ports:
+      - "27017:27017"
+    healthcheck:
+      test: echo 'db.runCommand("ping").ok' | mongosh localhost:27017/test --quiet
+    networks:
+      - db-network
+
+  notifications-core:
+    container_name: notifications-core
+    build: .
+    env_file:
+      - docker.env
+    depends_on:
+      mongo-db:
+        condition: service_healthy
+    ports:
+      - "8080:8080"
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://localhost:8080" ]
+      interval: 10s
+      timeout: 50s
+      retries: 3
+      start_period: 10s
+    networks:
+      - db-network
